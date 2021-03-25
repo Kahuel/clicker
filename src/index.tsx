@@ -5,7 +5,14 @@ import { createStore } from "redux";
 import { App } from "./App";
 import { reducers } from "./store";
 
-const store = createStore(reducers);
+const initStore = () => {
+  const store = localStorage.getItem("store");
+  if (store) {
+    return JSON.parse(store);
+  }
+  return undefined;
+};
+const store = createStore(reducers, initStore());
 
 ReactDOM.render(
   <Provider store={store}>

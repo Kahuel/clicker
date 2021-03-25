@@ -1,7 +1,9 @@
-export const hitting = (target: string, dmg: number) => ({
+import { Weapon } from "types/types";
+
+export const hitting = () => ({
   type: "HITTING",
-  payload: { target, dmg },
 });
-export const newEnemySpawn = () => ({
-  type: "NEW_ENEMY_SPAWN",
+export const weaponSwitch = (hand: string, newWeapon: Weapon) => ({
+  type: "WEAPON_SWITCH",
+  payload: { hand, newWeapon },
 });

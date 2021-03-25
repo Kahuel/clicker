@@ -1,50 +1,79 @@
-import { Action } from "../../types/types";
+import { Action, Store, Weapon } from "types/types";
+import { enemyCreator, saver, itemDrop } from "./util";
 
 const defaultPlayer = {
-  lvl: 1,
-  role: "player",
-  maxHP: 10,
-  hp: 10,
-  dmg: 1,
-  xp: 0,
-  leftHand: "empty",
-  rightHand: "empty",
+  leftWeapon: { lvl: 10, name: "fist", dmg: 1 },
+  rightWeapon: { lvl: 10, name: "fist", dmg: 1 },
   inventory: [],
 };
 
-const defaultEnemy = {
-  lvl: 1,
-  role: "enemy",
-  maxHP: 10,
-  hp: 10,
-  dmg: 1,
-  xp: 0,
-  leftHand: "empty",
-  rightHand: "empty",
-};
-
 export const combat = (
-  store = [defaultPlayer, defaultEnemy],
+  store: Store = {
+    lvl: 1,
+    xp: 0,
+    player: defaultPlayer,
+    enemy: enemyCreator(1),
+  },
   action: Action
 ) => {
   switch (action.type) {
     case "HITTING": {
-      const { target, dmg } = action.payload;
-      console.log("HIT");
       console.log(store);
-      return store.map((fighter) => {
-        const role = fighter.role;
-        if (role === target) {
-          const newFighterHP = fighter.hp - dmg;
-          return { ...fighter, hp: newFighterHP };
+      const { lvl, xp, player, enemy } = store;
+      const dmg = player.leftWeapon.dmg + player.rightWeapon.dmg;
+      const newHp = enemy.hp - dmg;
+      //enemy died?
+      if (newHp < 1) {
+        const newInventory = itemDrop(lvl, player.inventory);
+        const newXP = xp + lvl ** 2;
+        //lvlup?
+        if (newXP >= 10 + 2 ** (lvl + 1)) {
+          const newLvl = lvl + 1;
+          const newStore = {
+            ...store,
+            xp: 0,
+            lvl: newLvl,
+            player: {
+              ...player,
+              inventory: newInventory,
+            },
+            enemy: enemyCreator(lvl),
+          };
+          return saver(newStore);
         }
-        return fighter;
-      });
+        //enemy got damage
+        const newStore = {
+          ...store,
+          xp: newXP,
+          player: {
+            ...player,
+            inventory: newInventory,
+          },
+          enemy: enemyCreator(lvl),
+        };
+        return saver(newStore);
+      }
+      const newStore = { ...store, enemy: { ...store.enemy, hp: newHp } };
+      return saver(newStore);
     }
-    case "NEW_ENEMY_SPAWN": {
-      return store.map((fighter) =>
-        fighter.hp < 1 ? defaultEnemy : { ...fighter, xp: fighter.xp + 1 }
-      );
+    case "WEAPON_SWITCH": {
+      const { player } = store;
+      const { hand, newWeapon } = action.payload;
+      console.log(action.payload);
+      const prevWeapon =
+        hand === "leftWeapon"
+          ? { ...player.leftWeapon }
+          : { ...player.rightWeapon };
+      return {
+        ...store,
+        player: {
+          ...player,
+          [hand]: newWeapon,
+          inventory: player.inventory.map((weapon: Weapon) =>
+            weapon === newWeapon ? prevWeapon : weapon
+          ),
+        },
+      };
     }
     default:
       return store;
