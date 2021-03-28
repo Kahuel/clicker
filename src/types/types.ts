@@ -1,6 +1,11 @@
 interface Payload {
+  prevWeapon: Weapon;
   newWeapon: Weapon;
-  hand: string;
+  handSlot: "leftWeapon" | "rightWeapon";
+}
+
+export interface WeaponUpgradePayload {
+  weapon: Weapon;
 }
 
 export interface Action {
@@ -28,6 +33,7 @@ interface Player {
 export interface Store {
   lvl: number;
   xp: number;
+  coins: number;
   player: Player;
   enemy: Enemy;
 }

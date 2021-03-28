@@ -7,10 +7,12 @@ export const Player = () => {
   const { leftWeapon, rightWeapon } = useSelector(
     (store: Store) => store.player
   );
+  const coins = useSelector((store: Store) => store.coins);
   return (
     <div>
-      <Hand type="leftWeapon" weapon={leftWeapon} />
-      <Hand type="rightWeapon" weapon={rightWeapon} />
+      <div>{`Coins: ${coins}`}</div>
+      <Hand handSlot="leftWeapon" weapon={leftWeapon} />
+      <Hand handSlot="rightWeapon" weapon={rightWeapon} />
     </div>
   );
 };
