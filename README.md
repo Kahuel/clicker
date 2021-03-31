@@ -1,2 +1,3 @@
 # clicker
+
 Simple clicker
