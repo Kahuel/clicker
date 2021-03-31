@@ -1,1 +1,2 @@
-export { Fighter } from "./Fighters";
+export { Player } from "./Player";
+export { Enemy } from "./Enemy";
