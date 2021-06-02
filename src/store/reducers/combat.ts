@@ -28,6 +28,7 @@ export const combat = (
         const newInventory = itemDrop(lvl, player.inventory);
         const newXP = xp + lvl ** 2;
         const newCoins = coins + Math.ceil(Math.random() * 3) * lvl;
+        const sortedInventory = _.sortBy(newInventory, [(e) => e.dmg]);
         //lvlup?
         if (newXP >= 10 + 2 ** (lvl + 1)) {
           const newLvl = lvl + 1;
@@ -38,7 +39,7 @@ export const combat = (
             lvl: newLvl,
             player: {
               ...player,
-              inventory: newInventory,
+              inventory: sortedInventory,
             },
             enemy: enemyCreator(lvl),
           };
@@ -51,7 +52,7 @@ export const combat = (
           coins: newCoins,
           player: {
             ...player,
-            inventory: newInventory,
+            inventory: sortedInventory,
           },
           enemy: enemyCreator(lvl),
         };
@@ -65,7 +66,7 @@ export const combat = (
       const newInventory = store.player.inventory.map((weapon: Weapon) =>
         weapon.name === newWeapon.name ? prevWeapon : weapon
       );
-      const sortedInventory = _.sortBy(newInventory, [(e) => e.name]);
+      const sortedInventory = _.sortBy(newInventory, [(e) => e.dmg]);
       return {
         ...store,
         player: {
@@ -79,6 +80,10 @@ export const combat = (
       console.log(store);
       const { handSlot } = action.payload;
       const weaponToUpgrade = store.player[handSlot];
+      if (weaponToUpgrade.lvl > 9) {
+        alert("Maximum lvl reached");
+        return store;
+      }
       const newBalance = store.coins - store.lvl * weaponToUpgrade.lvl;
       if (newBalance < 0) {
         return store;
@@ -95,7 +100,7 @@ export const combat = (
           },
         },
       };
-      return newStore;
+      return saver(newStore);
     }
     default:
       return store;

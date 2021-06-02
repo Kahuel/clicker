@@ -6,6 +6,7 @@ import _ from "lodash";
 
 export const Hand = (props: any) => {
   const inventory = useSelector((store: Store) => store.player.inventory);
+  const worldLvl = useSelector((store: Store) => store.lvl);
   const dispatch = useDispatch();
   const { handSlot, weapon } = props;
   return (
@@ -22,10 +23,10 @@ export const Hand = (props: any) => {
           );
         }}
       >
-        <option selected>{weapon.name}</option>
+        <option selected>{`${weapon.name} (${weapon.dmg} dmg)`}</option>
         {inventory.map((weapon, index) => (
           <option key={_.uniqueId("key")} value={index}>
-            {weapon.name}
+            {`${weapon.name} (${weapon.dmg} dmg)`}
           </option>
         ))}
       </select>
@@ -34,7 +35,9 @@ export const Hand = (props: any) => {
           dispatch(combatActions.ugradeWeapon(handSlot));
         }}
       >
-        +
+        {weapon.lvl === 10
+          ? "Max lvl"
+          : `Upgrade for ${worldLvl * weapon.lvl} (+${worldLvl} dmg)`}
       </button>
     </div>
   );

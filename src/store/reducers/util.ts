@@ -5,8 +5,8 @@ export const factorial = (x: number): number =>
   x <= 1 ? 1 : x * factorial(x - 1);
 
 export const enemyCreator = (lvl: number) => ({
-  maxHP: 10 * lvl,
-  hp: 10 * lvl,
+  maxHP: 10 * lvl + Math.ceil(Math.exp(lvl)),
+  hp: 10 * lvl + Math.ceil(Math.exp(lvl)),
 });
 
 export const saver = (store: any) => {
