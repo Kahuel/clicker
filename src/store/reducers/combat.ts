@@ -77,7 +77,6 @@ export const combat = (
       };
     }
     case "UPGRADE_WEAPON": {
-      console.log(store);
       const { handSlot } = action.payload;
       const weaponToUpgrade = store.player[handSlot];
       if (weaponToUpgrade.lvl > 9) {
